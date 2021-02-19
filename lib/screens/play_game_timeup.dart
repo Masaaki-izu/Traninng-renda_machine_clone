@@ -7,7 +7,7 @@ import 'package:renda_machine_clone/db/db_renda_machin.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class PlayGameTimeUp extends StatefulWidget {
-  final int rendaTimeValue;
+  final int rendaSelectTimeValue;
   final int rendaCount;
   final String timeCount;
   final String inputData;
@@ -15,13 +15,19 @@ class PlayGameTimeUp extends StatefulWidget {
   final DbRendaMachin dbRendaMachin;
 
   PlayGameTimeUp(
-      {Key key, this.dbRendaMachin,this.rendaTimeValue, this.rendaCount, this.timeCount,this.inputData,this.numberScore})
+      {Key key,
+      this.dbRendaMachin,
+      this.rendaSelectTimeValue,
+      this.rendaCount,
+      this.timeCount,
+      this.inputData,
+      this.numberScore})
       : super(key: key);
 
   @override
   PlayGameTimeUpState createState() => PlayGameTimeUpState();
 }
-//プレイ画面のタイムアップ
+
 class PlayGameTimeUpState extends State<PlayGameTimeUp> {
   final GlobalKey<MyCustomOutlineButtonState> _key = GlobalKey();
   final GlobalKey<HomeScreenState> _key4 = GlobalKey();
@@ -29,8 +35,8 @@ class PlayGameTimeUpState extends State<PlayGameTimeUp> {
 
   @override
   void initState() {
-    SystemChrome.setEnabledSystemUIOverlays([]); //ナビゲーションバーとステータスバーの非表示
-    widget.dbRendaMachin.scoreSetProcess(widget.rendaCount,widget.inputData); //タイムアップ時、スコア等をデータベース更新
+    SystemChrome.setEnabledSystemUIOverlays([]);
+    widget.dbRendaMachin.scoreUpdateProcess(widget.rendaCount, widget.inputData);
     super.initState();
   }
 
@@ -47,35 +53,30 @@ class PlayGameTimeUpState extends State<PlayGameTimeUp> {
       backgroundColor: Colors.transparent,
       body: Stack(
         children: <Widget>[
-          BackgroundImageDisplay(),//背景画像表示
+          BackgroundImageDisplay(),
           SafeArea(
-              child: Column(
-                children: <Widget>[
-                  //backgroundColor: Colors.transparent,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                          widget.timeCount,
-                          style: textStyle),
-                      SizedBox(
-                        width: 20.0.w,
-                      ),
-                      _quitButtonDisplay(),
-                    ],
-                  ),
-                  //連打カウント表示
-                  _countRendDispaly(),
-                  //Time Up 表示
-                  _screenTimeUpDisplay(),
-                ],
-              ),
+            child: Column(
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(widget.timeCount, style: textStyle),
+                    SizedBox(
+                      width: 20.0.w,
+                    ),
+                    _quitButtonDisplay(),
+                  ],
+                ),
+                _countRendDispaly(),
+                _screenTimeUpDisplay(),
+              ],
             ),
+          ),
         ],
       ),
     );
   }
-  // Time Up 表示
+
   Widget _screenTimeUpDisplay() {
     return Stack(
       children: <Widget>[
@@ -84,12 +85,12 @@ class PlayGameTimeUpState extends State<PlayGameTimeUp> {
         ),
         Text(
           'Time' + '\'' + 's' + ' UP!',
-          style: TextStyle(fontSize: ScreenUtil().setSp(65.0)),
+          style: TextStyle(fontSize: 65.0.ssp),
         ),
       ],
     );
   }
-  //連打カウント表示
+
   Widget _countRendDispaly() {
     return Container(
       child: Column(
@@ -99,7 +100,7 @@ class PlayGameTimeUpState extends State<PlayGameTimeUp> {
           ),
           Text(
             widget.rendaCount.toString(),
-            style: TextStyle(fontSize: ScreenUtil().setSp(70.0)),
+            style: TextStyle(fontSize: 70.0.ssp),
           ),
           SizedBox(
             height: 15.0.h,
@@ -108,15 +109,16 @@ class PlayGameTimeUpState extends State<PlayGameTimeUp> {
       ),
     );
   }
-  //QUITボタン押下時、前々画面に戻る
+
   _quitEndprocess() {
     var countScreen = 0;
     Navigator.popUntil(context, (_) => countScreen++ >= 2);
   }
-  //QUIT ボタン表示
+
   Widget _quitButtonDisplay() {
-    return  MyCustomOutlineButton(
-      key: _key,  //_myCustumOutlineButton(
+    return MyCustomOutlineButton(
+      key: _key,
+      //_myCustumOutlineButton(
       text: 'QUIT',
       color: Colors.redAccent.withOpacity(0.3),
       onPressed: () => _quitEndprocess(),

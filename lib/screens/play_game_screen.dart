@@ -9,15 +9,14 @@ import 'package:renda_machine_clone/screens/play_game_timeup.dart';
 import 'mycustom_outline_button.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-//プレイ画面
 class PlayGameScreen extends StatefulWidget {
-  final int rendaTimeValue;
+  final int rendaSelectTimeValue;
   final int beforeSore;
   final String inputData;
   final DbRendaMachin dbRendaMachin;
 
   PlayGameScreen(
-      {Key key, this.dbRendaMachin, this.rendaTimeValue, this.beforeSore, this.inputData})
+      {Key key, this.dbRendaMachin, this.rendaSelectTimeValue, this.beforeSore, this.inputData})
       : super(key: key);
 
   @override
@@ -25,16 +24,16 @@ class PlayGameScreen extends StatefulWidget {
 }
 
 class PlayGameScreenState extends State<PlayGameScreen> {
-  final GlobalKey<FlutterStopWatchState> _key = GlobalKey(); //
+  final GlobalKey<FlutterStopWatchState> _key = GlobalKey();
   final GlobalKey<MyCustomOutlineButtonState> _key2 = GlobalKey();
   TextStyle textStyle = TextStyle(fontSize: 80.0.ssp, fontFamily: 'Bebas Neue');
-  bool isPlayStartEnd = false;
+  bool isPlayStart = false;
   int _counter = 0;
   bool isPlayTimeUpFlag = false;
 
   @override
   void initState() {
-    SystemChrome.setEnabledSystemUIOverlays([]); //ナビゲーションバーとステータスバーの非表示
+    SystemChrome.setEnabledSystemUIOverlays([]);
     super.initState();
   }
 
@@ -50,7 +49,7 @@ class PlayGameScreenState extends State<PlayGameScreen> {
       backgroundColor: Colors.transparent,
       body: Stack(
         children: <Widget>[
-          BackgroundImageDisplay(), //背景画像表示
+          BackgroundImageDisplay(),
           SafeArea(
             child: Center(
               child: Column(
@@ -58,15 +57,14 @@ class PlayGameScreenState extends State<PlayGameScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      //カウントアップ　又は　No　Limit 表示
-                      widget.rendaTimeValue == 2 ? Text( //Endlessの場合
+                      widget.rendaSelectTimeValue == 2 ? Text(
                         'NO LIMIT',
                         style: TextStyle(
                             fontSize: 50.0.ssp, fontFamily: 'Bebas Neue'),)
-                          : FlutterStopWatch( //タイマーアップ　カウンタのインスタンス
+                          : FlutterStopWatch(
                         key: _key,
                         dbRendaMachin: widget.dbRendaMachin,
-                        rendaTimeValue: widget.rendaTimeValue,
+                        rendaSelectTimeValue: widget.rendaSelectTimeValue,
                         inputdata: widget.inputData,
                         numberScore: widget.beforeSore,
                       ),
@@ -74,20 +72,18 @@ class PlayGameScreenState extends State<PlayGameScreen> {
                         width: 20.0.h,
                       ),
                       //TODO QUIT
-                      _quitButtonDisplay(), //QUIT ボタン表示
+                      _quitButtonDisplay(),
                     ],
                   ),
                   //
-                  (isPlayStartEnd) //連打ボタン押下、プレイスタート　true
-                      ? _countRendDispaly() //連打カウント表示
+                  (isPlayStart)
+                      ? _countRendDispaly()
                       : Text(
                     ' Press any button to Start',
                     style: TextStyle(
                         fontSize: 45.0.ssp),
-                    //textAlign: TextAlign.start,
                   ),
-                  //叩くボタン（４かける４）　表示
-                  _rendaButtonLine(), //連打ボタン　１６個表示
+                  _rendaButtonLine(),
                   _rendaButtonLine(),
                   _rendaButtonLine(),
                   _rendaButtonLine(),
@@ -99,7 +95,7 @@ class PlayGameScreenState extends State<PlayGameScreen> {
       ),
     );
   }
-  //連打ボタン表示
+
   Widget _rendaButtonLine() {
     return Expanded(
       flex: 1,
@@ -114,19 +110,19 @@ class PlayGameScreenState extends State<PlayGameScreen> {
       ),
     );
   }
-  //Quit ボタン押下時
-  Future<void> _quitEndprocess() async {
+
+  Future<void> _quitButtonProcess() async {
     isPlayTimeUpFlag = false;
     //
-    if (isPlayStartEnd == true && widget.rendaTimeValue != 2) {
-      _key.currentState.stopResetStr(); //Quitボタン押された時、タイマーリセット
+    if (isPlayStart == true && widget.rendaSelectTimeValue != 2) {
+      _key.currentState.stopResetCounter();
     }
     //
-    isPlayStartEnd = false;
-    if (widget.rendaTimeValue == 2) { //連打時間エンドレス時、データベース更新
-      await widget.dbRendaMachin.scoreSetProcess(_counter, widget.inputData);
+    isPlayStart = false;
+    if (widget.rendaSelectTimeValue == 2) {
+      await widget.dbRendaMachin.scoreUpdateProcess(_counter, widget.inputData);
 
-      Navigator.pop( //前の画面（ホーム）に戻る、連打カウントを返す
+      Navigator.pop(
           context, _counter);
     } else {
       Navigator.pop(
@@ -134,52 +130,50 @@ class PlayGameScreenState extends State<PlayGameScreen> {
     }
     return;
   }
-  //Quit ボタン表示
+
   Widget _quitButtonDisplay() {
     return MyCustomOutlineButton(
       key: _key2,
       text: 'QUIT',
       color: Colors.redAccent.withOpacity(0.3),
-      onPressed: () => _quitEndprocess(),
-      //width: double.infinity,
+      onPressed: () => _quitButtonProcess(),
       redius1: 20.0.r,
       edge: 4.0.w,
       redius2: 15.0.r,
       fontsize: 55.0.ssp,
     );
   }
-  //各連打ボタン表示＆押下時の処理
+
   Widget _rendaButton() {
     return MyCustomOutlineButton(
       key: new GlobalKey<MyCustomOutlineButtonState>(),
       text: '',
       color: Colors.redAccent.withOpacity(0.3),
-      //width: double.infinity,
       redius1: 20.0.r,
       edge: 4.0.w,
       redius2: 15.0.r,
       fontsize: 60.0.ssp,
       onPressed: () {
         setState(() {
-          if (widget.rendaTimeValue == 2) { //連打時間エンドレスの場合
-            isPlayStartEnd = true;          //連打プレイスタート
+          if (widget.rendaSelectTimeValue == 2) {
+            isPlayStart = true;
             if (_counter == 0) _counter = _counter + widget.beforeSore;
-            _counter++;
-          } else { //エンドレス以外
+              _counter++;
+          } else {
             if (_counter == 0) {
-              isPlayStartEnd = true;
-              _key.currentState.startListenStr(); //タイムアップスタート
+              isPlayStart = true;
+              _key.currentState.startListenStr();
             }
             if (!_key.currentState.isTimeUpFlag) {
               _counter++;
-              _key.currentState.scoreCount = _counter; //連打カウント　セット
+              _key.currentState.scoreCount = _counter;
             }
           }
         });
       },
     );
   }
-  //連打回数表示
+
   Widget _countRendDispaly() {
     return Container(
       child: Column(

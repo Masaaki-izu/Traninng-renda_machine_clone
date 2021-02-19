@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 
-//共通使用のボタンクラス
 class MyCustomOutlineButton extends StatefulWidget {
-  final String text;  //ボタンに表示するテキスト
-  final VoidCallback onPressed; //押下時、呼び出す関数など
-  final Color color;  //ボタンの色
-  final double width; //ボタンの幅
-  final double redius1;//飾りの角の削除の調整値
-  final double edge;// ボタンの四方余白調整
-  final double redius2;//ボタンの角の削除の調整値
-  final double fontsize;//表示するテキストのフォントサイズ
+  final String text;
+  final VoidCallback onPressed;
+  final Color color;
+  final double width;
+  final double redius1;
+  final double edge;
+  final double redius2;
+  final double fontsize;
 
   const MyCustomOutlineButton(
       {Key key, this.text, this.onPressed, this.color, this.width,

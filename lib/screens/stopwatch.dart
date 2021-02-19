@@ -7,16 +7,15 @@ import 'home_screen.dart';
 import 'package:renda_machine_clone/db/db_renda_machin.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-//ストップウォッチ（カウントアップ）10秒　又　60秒　stop
 class FlutterStopWatch extends StatefulWidget {
-  final int rendaTimeValue;
+  final int rendaSelectTimeValue;
   final String inputdata;
   final int numberScore;
   final DbRendaMachin dbRendaMachin;
 
   FlutterStopWatch({Key key,
     this.dbRendaMachin,
-    this.rendaTimeValue,
+    this.rendaSelectTimeValue,
     this.inputdata,
     this.numberScore})
       : super(key: key);
@@ -27,27 +26,25 @@ class FlutterStopWatch extends StatefulWidget {
 
 class FlutterStopWatchState extends State<FlutterStopWatch> {
   final List<int> playTime = [10000, 60000, 0];
-  bool flag = false; //flag = true;
-  Stream<int> timerStream; //ストリームのインスタンス
-  StreamSubscription<int> timerSubscription; //ストリームのサブスクリプション
+  bool flag = false;
+  Stream<int> timerStream;
+  StreamSubscription<int> timerSubscription;
   TextStyle textStyle = TextStyle(
       fontSize: 80.0.ssp,
-      fontFamily: "Bebas Neue");
-  int hundreds = 0; // 1/100 秒
-  int seconds = 0; // 秒
-  int scoreCount = 0; //スコアカウント
-  String secondsStr = '00'; //秒　文字列
-  String hundredsStr = '00'; //1/100 秒　文字列
-  bool isTimeUpFlag = false; //タイマーアップ　フラグ
+      fontFamily: 'Bebas Neue');
+  int hundreds = 0;
+  int seconds = 0;
+  int scoreCount = 0;
+  String secondsStr = '00';
+  String hundredsStr = '00';
+  bool isTimeUpFlag = false;
 
-  //ストップウォッチストリーム作成(毎秒後の経過時間を1/1000秒単位で提供するストリーム)
   Stream<int> stopWatchStream() {
     StreamController<int> streamController;
     Timer timer;
-    Duration timerInterval = Duration(milliseconds: 1); // 1/1000 秒
+    Duration timerInterval = Duration(milliseconds: 1);
     int counter = 0;
 
-    //タイマー停止処理
     void stopTimer() {
       if (timer != null) {
         timer.cancel();
@@ -55,32 +52,28 @@ class FlutterStopWatchState extends State<FlutterStopWatch> {
         counter = 0;
         streamController.close();
       } else {
-        flag = false; //flag = true;
+        flag = false;
       }
     }
 
-    // 呼ばれるごとにカウンター　+1
     void tick(_) {
       counter++;
-      // 10秒又は60秒後　カウンターストップ　flag = true
-      if (counter == playTime[widget.rendaTimeValue]) {
-        flag = true; //false;
+      if (counter == playTime[widget.rendaSelectTimeValue]) {
+        flag = true;
       }
-      streamController.add(counter); //ストリームがカウンター取得
+      streamController.add(counter);
       if (flag) {
         setState(() {
           stopTimer();
-          isTimeUpFlag = true; //タイマーアップstopフラグ　true
+          isTimeUpFlag = true;
         });
       }
     }
 
-    // リッスンしている間、1/1000 秒ごと、tick関数が呼ばれる
     void startTimer() {
       timer = Timer.periodic(timerInterval, tick);
     }
 
-    //StreamControllerのインスタンス化
     streamController = StreamController<int>(
       onListen: startTimer,
       onCancel: stopTimer,
@@ -97,7 +90,7 @@ class FlutterStopWatchState extends State<FlutterStopWatch> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Text(
-            secondsStr + '.' + hundredsStr, //カウンタ表示
+            secondsStr + '.' + hundredsStr,
             style: textStyle, textAlign: TextAlign.start,
           ),
         ],
@@ -105,27 +98,25 @@ class FlutterStopWatchState extends State<FlutterStopWatch> {
     );
   }
 
-  // ボタン　押下時
   void startListenStr() {
-    timerStream = stopWatchStream(); //ストップウォッチストリーム作成&タイマースタート
+    timerStream = stopWatchStream();
 
-    timerSubscription = timerStream.listen((int newTick)  {//ストリームをリッスン //async
+    timerSubscription = timerStream.listen((int newTick)  {
         setState(() {
-          hundreds = (newTick / 10).floor(); //ミリ（1/1000) １０割って　１００分１
-          seconds = (hundreds / 100).floor(); // 100で割って、１秒
+          hundreds = (newTick / 10).floor();
+          seconds = (hundreds / 100).floor();
           hundredsStr = (hundreds % 100).toString().padLeft(2, '0');
           secondsStr = (seconds).toString().padLeft(2, '0');
         });
-        if (isTimeUpFlag) //タイムアップフラグによりカウンタストップ
+        if (isTimeUpFlag)
         {
-          _timeUpScreenTransition(secondsStr + '.' + hundredsStr); //タイムアップ後の処理へ
+          _timeUpScreenTransition(secondsStr + '.' + hundredsStr);
         }
       }
     );
   }
 
-  // QUIT（RESET） ボタン　押下時
-  void stopResetStr() {
+  void stopResetCounter() {
     timerSubscription.cancel();
     timerStream = null;
     setState(() {
@@ -134,30 +125,22 @@ class FlutterStopWatchState extends State<FlutterStopWatch> {
     });
   }
 
-  // タイマーアップ時、タイムアップ画面へ遷移
   Future<void> _timeUpScreenTransition(String timeCount) async {
     isTimeUpFlag = false;
     FlutterStopWatch dbKousin = FlutterStopWatch();
     await widget.dbRendaMachin
-        .scoreSetProcess(scoreCount, widget.inputdata); //タイムアップ時、スコア等をデータベース更新
+        .scoreUpdateProcess(scoreCount, widget.inputdata);
 
-    //タイムアップ画面へ遷移
     Navigator.push(
         context, MaterialPageRoute(
         builder: (context) =>
             PlayGameTimeUp(
               dbRendaMachin: widget.dbRendaMachin,
-              //データベース用のインスタンス
-              rendaTimeValue: widget.rendaTimeValue,
-              //連打時間選択の値
+              rendaSelectTimeValue: widget.rendaSelectTimeValue,
               rendaCount: scoreCount,
-              //連打カウント
               timeCount: timeCount,
-              // タイムアップ時間
               inputData: widget.inputdata,
-              //名前などの入力データ
-              numberScore: widget.numberScore, //前のスコア回数
-              // isFlag: true,
+              numberScore: widget.numberScore,
             ))).then((value) =>
     {
       setState(() {}),

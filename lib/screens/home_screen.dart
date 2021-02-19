@@ -12,14 +12,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomeScreen extends StatefulWidget {
   final int score;
-  final int returnRendaTimeValue;
+  final int returnRendaSelectTimeValue;
   final DbRendaMachin returnDbRendaMachin;
 
   HomeScreen(
-      {Key key, //識別するためのID
-      this.returnDbRendaMachin, //データベースを利用するためのクラスのインスタンス
-      this.returnRendaTimeValue, //連打時間選択（0: 10秒　1: 60秒　2: QUIT押されるまで
-      this.score}) //連打カウント
+      {Key key,
+      this.returnDbRendaMachin,
+      this.returnRendaSelectTimeValue,
+      this.score})
       : super(key: key);
 
   @override
@@ -28,19 +28,18 @@ class HomeScreen extends StatefulWidget {
 
 class HomeScreenState extends State<HomeScreen> {
   final GlobalKey<MyCustomOutlineButtonState> _key =
-      GlobalKey(); // 共通使用のボタンクラスのGlobalKeyを取得
-  final DbRendaMachin dbRendaMachin = DbRendaMachin(); //DB用の連打マシンクラスのインスタンス化
+      GlobalKey();
+  final DbRendaMachin dbRendaMachin = DbRendaMachin();
   final TextEditingController _textEditingController =
-      TextEditingController(); //入力内容を管理するためのインスタンス化
-  bool isNameInputData = false; //名前等の入力されたかのフラグ
-  bool isSameUnNameFlag = false; //DBに同じ名前がない場合、true
-  String inputDataString = ''; //入力した名前
+      TextEditingController();
+  bool isNameInputData = false;
+  bool isDbSameUnName = false;
+  String inputDataString = '';
 
   @override
   void initState() {
-    SystemChrome.setEnabledSystemUIOverlays([]); //ナビゲーションバーとステータスバーの非表示
+    SystemChrome.setEnabledSystemUIOverlays([]);
     super.initState();
-    //DBからデータ読み込み
     _rankingDataRead();
   }
 
@@ -48,32 +47,29 @@ class HomeScreenState extends State<HomeScreen> {
   void dispose() {
     super.dispose();
     SystemChrome.setEnabledSystemUIOverlays(
-        SystemUiOverlay.values); //ナビゲーションバーとステータスバーの表示するように戻す
+        SystemUiOverlay.values);
   }
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        BackgroundImageDisplay(), //背景画像表示
+        BackgroundImageDisplay(),
         Scaffold(
-          backgroundColor: Colors.transparent, //透過化
+          backgroundColor: Colors.transparent,
           body: SingleChildScrollView(
-            //端末縦サイズを超えたら、スクロール
             child: SafeArea(
               child: Center(
                 child: Column(
                   children: <Widget>[
-                    //スコア表示部分
                     _scoreDisplayPart(),
                     SizedBox(
-                      height: 6.0.h, //画面の高さに適応(ScreenUtil）
+                      height: 6.0.h,
                     ),
-                    //ゲーム名表示部分
                     Text(
                       'Renda  ',
                       style: TextStyle(
-                          fontSize: 53.0.ssp, //画面サイズによりサイズが拡大縮小
+                          fontSize: 53.0.ssp,
                           color: Colors.white,
                           fontWeight: FontWeight.bold),
                     ),
@@ -87,34 +83,29 @@ class HomeScreenState extends State<HomeScreen> {
                     SizedBox(
                       height: 8.0.h,
                     ),
-                    //タップ時、名前などの入力のダイアログ 表示
                     GestureDetector(
                       onTap: () {
-                        //表示部分か、アイコンをタップすると、以下実行
                         _textEditingController.text = '';
-                        _showInputDialog(); //入力ダイアログ表示
+                        _showInputDialog();
                         setState(() {
-                          //
                         });
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           SizedBox(
-                            width: 5.0.w, //画面の幅に適応
+                            width: 5.0.w,
                           ),
                           Container(
-                            //alignment: Alignment.center,
-                            width: 0.7.sw, //画面幅の0.7倍
-                            //height: 0.1.sh,
+                            width: 0.7.sw,
                             decoration: BoxDecoration(
                               color: Colors.white,
                               border: Border.all(
-                                  color: Colors.blue, width: 2.w), //画面幅に適応
+                                  color: Colors.blue, width: 2.w),
                               borderRadius: BorderRadius.circular(
-                                  8.0.r), //r,幅または高さの小さい方に応じて適応
+                                  8.0.r),
                             ),
-                            padding: EdgeInsets.all(10.w), //画面幅に適応
+                            padding: EdgeInsets.all(10.w),
                             child: Center(
                               child: Text(
                                 inputDataString,
@@ -136,12 +127,10 @@ class HomeScreenState extends State<HomeScreen> {
                     SizedBox(
                       height: 8.0.h,
                     ),
-                    //連打時間選択ボタン
                     (isNameInputData) ? _rendaTimeSelect() : Container(),
                     SizedBox(
                       height: 13.0.h,
                     ),
-                    //PLAYボタン(名前入力の判断後)
                     (isNameInputData)
                         ? _playButton(context)
                         : Container(
@@ -155,10 +144,8 @@ class HomeScreenState extends State<HomeScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
-                        //フォント等、その他表示
                         _gameDisplayExplanation(),
-                        //ランキング表示
-                        _rankingDisplay(), //pixRatio), //s10Data),
+                        _rankingDisplay(),
                       ],
                     ),
                   ],
@@ -171,11 +158,10 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  //入力ダイアログ表示
   Future<void> _showInputDialog() async {
     await showDialog<String>(
       context: context,
-      barrierDismissible: false, //ボタン以外のクリックでは、ダイアログ を閉じれない
+      barrierDismissible: false,
       builder: (_) => AlertDialog(
         contentPadding: EdgeInsets.all(8.0.r),
         content: Row(
@@ -200,11 +186,10 @@ class HomeScreenState extends State<HomeScreen> {
                   fontSize: 24.0.ssp,
                 ),
                 maxLength: 10,
-                //最大文字数　１０
                 maxLengthEnforced: false,
                 controller: _textEditingController,
                 inputFormatters: [
-                  LengthLimitingTextInputFormatter(10), //入力文字数　１０
+                  LengthLimitingTextInputFormatter(10),
                 ],
               ),
             ),
@@ -219,11 +204,9 @@ class HomeScreenState extends State<HomeScreen> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0.r),
                   side: BorderSide(color: Colors.white)),
-              //const
               onPressed: () {
-                //inputData = '';
                 Navigator.pop(context, '');
-                SystemChrome.restoreSystemUIOverlays(); //入力完了した後にUI設定を復元
+                SystemChrome.restoreSystemUIOverlays();
               }),
           FlatButton(
               child: Text(
@@ -236,7 +219,6 @@ class HomeScreenState extends State<HomeScreen> {
                   side: BorderSide(color: Colors.white)),
               onPressed: () {
                 var name = _textEditingController.text;
-                //最大文字数が１０文字を超えると、１０文字まで、切り出す
                 if (name.length > 10) {
                   name = name.substring(0, 10);
                 }
@@ -254,7 +236,6 @@ class HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  //入力した名前などチェック後セット
   void _inputTextCheck(String name) {
     if (name.isEmpty) {
       print("enter");
@@ -269,40 +250,34 @@ class HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  //データベースから名前などの入力チェック
   Future<bool> _inputNameDBCheck(String name) async {
-    final List<Map<String, dynamic>> _isWhatName =
-        await dbRendaMachin.dbHelper.queryRowNameWhat(name);
-    // 名前がない場合
-    if (_isWhatName.isEmpty) {
-      dbRendaMachin.number10OfScore = 0; //全部スコア　０
+    final List<Map<String, dynamic>> _isName =
+        await dbRendaMachin.dbHelper.queryRowNameData(name);
+
+    if (_isName.isEmpty) {
+      dbRendaMachin.number10OfScore = 0;
       dbRendaMachin.number60OfScore = 0;
       dbRendaMachin.numberEndOfScore = 0;
-      isSameUnNameFlag = true;
+      isDbSameUnName = true;
       setState(() {});
       return false;
     } else {
-      // 名前がある場合、score のデータセット
-      dbRendaMachin.number10OfScore = _isWhatName[0]['scoreTen'];
-      dbRendaMachin.number60OfScore = _isWhatName[0]['scoreSixty'];
-      dbRendaMachin.numberEndOfScore = _isWhatName[0]['scoreEndLess'];
-      isSameUnNameFlag = false;
+      dbRendaMachin.number10OfScore = _isName[0]['scoreTen'];
+      dbRendaMachin.number60OfScore = _isName[0]['scoreSixty'];
+      dbRendaMachin.numberEndOfScore = _isName[0]['scoreEndLess'];
+      isDbSameUnName = false;
       setState(() {});
       return true;
     }
   }
 
-  //スコア表示部分
   Widget _scoreDisplayPart() {
     return Padding(
       padding: EdgeInsets.only(left: 8.0.r, right: 8.0.r, top: 8.0.r),
       child: Table(
         children: [
           TableRow(children: [
-            //スコア時間タイトル
             Center(
-              //child: FittedBox(
-              //  fit: BoxFit.fill,
               child: Text(
                 "10s",
                 style: TextStyle(
@@ -324,7 +299,6 @@ class HomeScreenState extends State<HomeScreen> {
             ),
           ]),
           TableRow(children: [
-            //各スコアの表示
             Center(
                 child: Text(
               (isNameInputData)
@@ -361,10 +335,9 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  //連打時間選択（選択された時間は、色を変える）
   Widget _rendaTimeSelect() {
     final List<Color> colorData = [Colors.blue, Colors.blue, Colors.blue];
-    colorData[dbRendaMachin.rendaTimeValue] = Colors.red;
+    colorData[dbRendaMachin.rendaSelectTimeValue] = Colors.red;
     return Container(
       child: FittedBox(
         child: ButtonBar(
@@ -380,7 +353,7 @@ class HomeScreenState extends State<HomeScreen> {
               ),
               onPressed: () {
                 setState(() {
-                  dbRendaMachin.rendaTimeValue = 0; //連打時間　１０s　選択
+                  dbRendaMachin.rendaSelectTimeValue = 0;
                 });
               },
             ),
@@ -394,7 +367,7 @@ class HomeScreenState extends State<HomeScreen> {
               ),
               onPressed: () {
                 setState(() {
-                  dbRendaMachin.rendaTimeValue = 1; //連打時間　６０s　選択
+                  dbRendaMachin.rendaSelectTimeValue = 1;
                 });
               },
             ),
@@ -408,7 +381,7 @@ class HomeScreenState extends State<HomeScreen> {
               ),
               onPressed: () {
                 setState(() {
-                  dbRendaMachin.rendaTimeValue = 2; //連打時間　エンドレス　選択
+                  dbRendaMachin.rendaSelectTimeValue = 2;
                 });
               },
             ),
@@ -418,13 +391,11 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // プレイ開始ボタン表示
   Widget _playButton(BuildContext context) {
     return Container(
       child: MyCustomOutlineButton(
         key: _key,
         text: 'PLAY',
-        //色の透過を設定
         color: Colors.redAccent.withOpacity(0.3),
         onPressed: () => _playGameScreen(context),
         width: 0.8.sw,
@@ -436,21 +407,18 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  //プレイ開始のため次画面
   _playGameScreen(BuildContext context) {
-    var beforeScore;
-    if (inputDataString.isEmpty) return; //名前の入力がない場合
-    //DBに同じ名前がない場合
-    if (isSameUnNameFlag) {
+    int beforeScore;
+    if (inputDataString.isEmpty) return;
+
+    if (isDbSameUnName) {
       dbRendaMachin.insert(
-          //データベースに１データ追加
           nickName: inputDataString,
-          timeCount: dbRendaMachin.rendaTimeValue,
+          timeCount: dbRendaMachin.rendaSelectTimeValue,
           score: 0);
-      isSameUnNameFlag = false;
+      isDbSameUnName = false;
     }
-    //スコアを次の画面に渡すための設定
-    switch (dbRendaMachin.rendaTimeValue) {
+    switch (dbRendaMachin.rendaSelectTimeValue) {
       case 0:
         beforeScore = dbRendaMachin.number10OfScore;
         break;
@@ -461,13 +429,13 @@ class HomeScreenState extends State<HomeScreen> {
         beforeScore = dbRendaMachin.numberEndOfScore;
         break;
     }
+
     Navigator.push(
-        //プレイ画面へ画面遷移
         context,
         MaterialPageRoute(
             builder: (context) => PlayGameScreen(
                   dbRendaMachin: dbRendaMachin,
-                  rendaTimeValue: dbRendaMachin.rendaTimeValue,
+                  rendaSelectTimeValue: dbRendaMachin.rendaSelectTimeValue,
                   beforeSore: beforeScore,
                   inputData: inputDataString,
                 ))).then((value) => {
@@ -475,8 +443,7 @@ class HomeScreenState extends State<HomeScreen> {
         });
   }
 
-  //連打ゲーム表示の説明など
-  //TODO:　仮のフォント使用、できれば実際のフォントに近いもの変更？
+  //TODO: 実際使用しているフォントを記載しましたが、他適当に記載している
   Widget _gameDisplayExplanation() {
     final double fontSize1 = 18.0;
     return Expanded(
@@ -542,11 +509,10 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  //ランキング表示
   //TODO:　できれば実際の形の枠に変更したい
   Widget _rankingDisplay() {
-    final double fontSize0 = 20.0; //タイトル表示のフォントサイズ
-    final double fontSize1 = 15.0; //内容のフォントサイズ（降順１０位以内）
+    final double fontSize0 = 20.0;
+    final double fontSize1 = 15.0;
     return Align(
       alignment: Alignment.bottomRight,
       child: Container(
@@ -572,62 +538,62 @@ class HomeScreenState extends State<HomeScreen> {
                 height: 1.0.h,
               ),
               Text(
-                '1.' + dbRendaMachin.scoreData[dbRendaMachin.rendaTimeValue][0],
+                '1.' + dbRendaMachin.scoreData[dbRendaMachin.rendaSelectTimeValue][0],
                 style: TextStyle(
                   fontSize: fontSize1.ssp,
                 ),
               ),
               Text(
-                '2.' + dbRendaMachin.scoreData[dbRendaMachin.rendaTimeValue][1],
+                '2.' + dbRendaMachin.scoreData[dbRendaMachin.rendaSelectTimeValue][1],
                 style: TextStyle(
                   fontSize: fontSize1.ssp,
                 ),
               ),
               Text(
-                '3.' + dbRendaMachin.scoreData[dbRendaMachin.rendaTimeValue][2],
+                '3.' + dbRendaMachin.scoreData[dbRendaMachin.rendaSelectTimeValue][2],
                 style: TextStyle(
                   fontSize: fontSize1.ssp,
                 ),
               ),
               Text(
-                '4.' + dbRendaMachin.scoreData[dbRendaMachin.rendaTimeValue][3],
+                '4.' + dbRendaMachin.scoreData[dbRendaMachin.rendaSelectTimeValue][3],
                 style: TextStyle(
                   fontSize: fontSize1.ssp,
                 ),
               ),
               Text(
-                '5.' + dbRendaMachin.scoreData[dbRendaMachin.rendaTimeValue][4],
+                '5.' + dbRendaMachin.scoreData[dbRendaMachin.rendaSelectTimeValue][4],
                 style: TextStyle(
                   fontSize: fontSize1.ssp,
                 ),
               ),
               Text(
-                '6.' + dbRendaMachin.scoreData[dbRendaMachin.rendaTimeValue][5],
+                '6.' + dbRendaMachin.scoreData[dbRendaMachin.rendaSelectTimeValue][5],
                 style: TextStyle(
                   fontSize: fontSize1.ssp,
                 ),
               ),
               Text(
-                '7.' + dbRendaMachin.scoreData[dbRendaMachin.rendaTimeValue][6],
+                '7.' + dbRendaMachin.scoreData[dbRendaMachin.rendaSelectTimeValue][6],
                 style: TextStyle(
                   fontSize: fontSize1.ssp,
                 ),
               ),
               Text(
-                '8.' + dbRendaMachin.scoreData[dbRendaMachin.rendaTimeValue][7],
+                '8.' + dbRendaMachin.scoreData[dbRendaMachin.rendaSelectTimeValue][7],
                 style: TextStyle(
                   fontSize: fontSize1.ssp,
                 ),
               ),
               Text(
-                '9.' + dbRendaMachin.scoreData[dbRendaMachin.rendaTimeValue][8],
+                '9.' + dbRendaMachin.scoreData[dbRendaMachin.rendaSelectTimeValue][8],
                 style: TextStyle(
                   fontSize: fontSize1.ssp,
                 ),
               ),
               Text(
                 '10.' +
-                    dbRendaMachin.scoreData[dbRendaMachin.rendaTimeValue][9],
+                    dbRendaMachin.scoreData[dbRendaMachin.rendaSelectTimeValue][9],
                 style: TextStyle(
                   fontSize: fontSize1.ssp,
                 ),
@@ -639,15 +605,14 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  //データベースからランキング表示のためデータ読み込み
   Future<void> _rankingDataRead() async {
-    await dbRendaMachin.setData10s();
-    await dbRendaMachin.setData60s();
-    await dbRendaMachin.setDataEndLess();
+    await dbRendaMachin.setRankingData10s();
+    await dbRendaMachin.setRankingData60s();
+    await dbRendaMachin.setRankingDataEndless();
     setState(() {});
   }
 
-  //データベースのデータ出力（デバッグ用）
+  // 以下　debug 用
   Future<void> _dataDBDisplay() async {
     final List<Map<String, dynamic>> _allData =
         await dbRendaMachin.dbHelper.queryAllRows();
@@ -656,12 +621,10 @@ class HomeScreenState extends State<HomeScreen> {
     print("-------------");
   }
 
-  //データベースから一つ名前データを削除（デバッグ用）
   Future<void> _data1Delete(String _name) async {
     await dbRendaMachin.dbHelper.delete(_name);
   }
 
-  //データベースから全ての名前データを削除（デバッグ用）
   Future<void> _dataAllDelete() async {
     String _name = '';
     final List<Map<String, dynamic>> _allData =
