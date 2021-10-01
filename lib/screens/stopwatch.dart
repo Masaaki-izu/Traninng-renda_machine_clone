@@ -1,11 +1,9 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:renda_machine_clone/screens/play_game_timeup.dart';
-import 'play_game_screen.dart';
-import 'home_screen.dart';
 import 'package:renda_machine_clone/db/db_renda_machin.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:renda_machine_clone/cs.dart';
 
 class FlutterStopWatch extends StatefulWidget {
   final int rendaSelectTimeValue;
@@ -13,11 +11,12 @@ class FlutterStopWatch extends StatefulWidget {
   final int numberScore;
   final DbRendaMachin dbRendaMachin;
 
-  FlutterStopWatch({Key key,
-    this.dbRendaMachin,
-    this.rendaSelectTimeValue,
-    this.inputdata,
-    this.numberScore})
+  FlutterStopWatch(
+      {Key key,
+      this.dbRendaMachin,
+      this.rendaSelectTimeValue,
+      this.inputdata,
+      this.numberScore})
       : super(key: key);
 
   @override
@@ -29,9 +28,7 @@ class FlutterStopWatchState extends State<FlutterStopWatch> {
   bool flag = false;
   Stream<int> timerStream;
   StreamSubscription<int> timerSubscription;
-  TextStyle textStyle = TextStyle(
-      fontSize: 80.0.ssp,
-      fontFamily: 'Bebas Neue');
+  TextStyle textStyle = TextStyle(fontSize: 80.0.ssp, fontFamily: fontName2); //'Bebas Neue');
   int hundreds = 0;
   int seconds = 0;
   int scoreCount = 0;
@@ -91,7 +88,8 @@ class FlutterStopWatchState extends State<FlutterStopWatch> {
         children: [
           Text(
             secondsStr + '.' + hundredsStr,
-            style: textStyle, textAlign: TextAlign.start,
+            style: textStyle,
+            textAlign: TextAlign.start,
           ),
         ],
       ),
@@ -99,21 +97,26 @@ class FlutterStopWatchState extends State<FlutterStopWatch> {
   }
 
   void startListenStr() {
-    timerStream = stopWatchStream();
+    String sameChar = '', sameChar1 = '';
 
-    timerSubscription = timerStream.listen((int newTick)  {
+    timerStream = stopWatchStream();
+    timerSubscription = timerStream.listen((int newTick) {
+      //setState(() {
+      hundreds = (newTick / 10).floor();
+      seconds = (hundreds / 100).floor();
+      hundredsStr = (hundreds % 100).toString().padLeft(2, '0');
+      secondsStr = (seconds).toString().padLeft(2, '0');
+      //});
+      if (sameChar != hundredsStr || sameChar1 != secondsStr) {
         setState(() {
-          hundreds = (newTick / 10).floor();
-          seconds = (hundreds / 100).floor();
-          hundredsStr = (hundreds % 100).toString().padLeft(2, '0');
-          secondsStr = (seconds).toString().padLeft(2, '0');
         });
-        if (isTimeUpFlag)
-        {
-          _timeUpScreenTransition(secondsStr + '.' + hundredsStr);
-        }
       }
-    );
+      sameChar = hundredsStr;
+      sameChar1 = secondsStr;
+      if (isTimeUpFlag) {
+        _timeUpScreenTransition(secondsStr + '.' + hundredsStr);
+      }
+    });
   }
 
   void stopResetCounter() {
@@ -127,23 +130,19 @@ class FlutterStopWatchState extends State<FlutterStopWatch> {
 
   Future<void> _timeUpScreenTransition(String timeCount) async {
     isTimeUpFlag = false;
-    FlutterStopWatch dbKousin = FlutterStopWatch();
-    await widget.dbRendaMachin
-        .scoreUpdateProcess(scoreCount, widget.inputdata);
-
+    await widget.dbRendaMachin.scoreUpdateProcess(scoreCount, widget.inputdata);
     Navigator.push(
-        context, MaterialPageRoute(
-        builder: (context) =>
-            PlayGameTimeUp(
-              dbRendaMachin: widget.dbRendaMachin,
-              rendaSelectTimeValue: widget.rendaSelectTimeValue,
-              rendaCount: scoreCount,
-              timeCount: timeCount,
-              inputData: widget.inputdata,
-              numberScore: widget.numberScore,
-            ))).then((value) =>
-    {
-      setState(() {}),
-    });
+        context,
+        MaterialPageRoute(
+            builder: (context) => PlayGameTimeUp(
+                  dbRendaMachin: widget.dbRendaMachin,
+                  rendaSelectTimeValue: widget.rendaSelectTimeValue,
+                  rendaCount: scoreCount,
+                  timeCount: timeCount,
+                  inputData: widget.inputdata,
+                  numberScore: widget.numberScore,
+                ))).then((value) => {
+          setState(() {}),
+        });
   }
 }

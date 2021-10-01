@@ -2,7 +2,7 @@
     package="com.example.renda_machine_clone">
    <application
         android:label="連打マシーン(clone)"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

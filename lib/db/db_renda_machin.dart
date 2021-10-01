@@ -4,40 +4,40 @@ class DbRendaMachin {
   final dbHelper = DatabaseHelper.instance;
   List<List<String>> scoreData = [
     [
-      ' ',
-      ' ',
-      ' ',
-      ' ',
-      ' ',
-      ' ',
-      ' ',
-      ' ',
-      ' ',
-      ' ',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
     ],
     [
-      ' ',
-      ' ',
-      ' ',
-      ' ',
-      ' ',
-      ' ',
-      ' ',
-      ' ',
-      ' ',
-      ' ',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
     ],
     [
-      ' ',
-      ' ',
-      ' ',
-      ' ',
-      ' ',
-      ' ',
-      ' ',
-      ' ',
-      ' ',
-      ' ',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
     ],
   ];
 
@@ -46,9 +46,7 @@ class DbRendaMachin {
   int numberEndOfScore = 0;
   int rendaSelectTimeValue = 0;
 
-  DbRendaMachin();
-
-  void insert({String nickName, int timeCount, int score}) async {
+  Future<int>insert({String nickName, int timeCount, int score}) async {
     List<int> indexData = [0, 0, 0];
     indexData[timeCount] = score;
     Map<String, dynamic> row = {
@@ -58,15 +56,16 @@ class DbRendaMachin {
       DatabaseHelper.columnEndLessScore: indexData[2],
     };
     final name = await dbHelper.insert(row);
+    return name;
   }
 
   void query() async {
     final allRows = await dbHelper.queryAllRows();
-    print('query all rows:');
+    //print('query all rows:');
     allRows.forEach((row) => print(row));
   }
 
-  void update({String nickName, int timeCount, int score}) async {
+  Future<int> update({String nickName, int timeCount, int score}) async {
     List<bool> inData = [false, false, false];
     inData[timeCount] = true;
     Map<String, dynamic> row = {
@@ -76,6 +75,7 @@ class DbRendaMachin {
       if (inData[2]) DatabaseHelper.columnEndLessScore: score,
     };
     final name = await dbHelper.update(row);
+    return name;
   }
 
   void delete({String name}) async {
@@ -136,31 +136,30 @@ class DbRendaMachin {
         case 0:
           if (gameScore > this.number10OfScore) {
             this.number10OfScore = gameScore;
-            update(
-                nickName: inputData,
-                timeCount: this.rendaSelectTimeValue,
-                score: this.number10OfScore);
+            await update(
+                  nickName: inputData,
+                  timeCount: this.rendaSelectTimeValue,
+                  score: this.number10OfScore);
             await setRankingData10s();
           }
           break;
         case 1:
           if (gameScore > this.number60OfScore) {
             this.number60OfScore = gameScore;
-            update(
-                nickName: inputData,
-                timeCount: this.rendaSelectTimeValue,
-                score: this.number60OfScore);
+            await update(
+                  nickName: inputData,
+                  timeCount: this.rendaSelectTimeValue,
+                  score: this.number60OfScore);
             await setRankingData60s();
           }
           break;
         case 2:
           if (gameScore > this.numberEndOfScore) {
             this.numberEndOfScore = gameScore;
-            //更新
-            update(
-                nickName: inputData,
-                timeCount: this.rendaSelectTimeValue,
-                score: this.numberEndOfScore);
+            await update(
+                  nickName: inputData,
+                  timeCount: this.rendaSelectTimeValue,
+                  score: this.numberEndOfScore);
             await setRankingDataEndless();
           }
           break;

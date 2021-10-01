@@ -30,7 +30,6 @@ class MyCustomOutlineButtonState extends State<MyCustomOutlineButton> {
         ),
         margin: EdgeInsets.all(widget.edge),
         child: RawMaterialButton(
-          fillColor: widget.color,
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(widget.redius2),

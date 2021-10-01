@@ -1,13 +1,11 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:renda_machine_clone/db/db_renda_machin.dart';
 import 'package:renda_machine_clone/screens/backgroud_image_display.dart';
-import 'home_screen.dart';
 import 'stopwatch.dart';
-import 'package:renda_machine_clone/screens/play_game_timeup.dart';
 import 'mycustom_outline_button.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:renda_machine_clone/cs.dart';
 
 class PlayGameScreen extends StatefulWidget {
   final int rendaSelectTimeValue;
@@ -26,7 +24,7 @@ class PlayGameScreen extends StatefulWidget {
 class PlayGameScreenState extends State<PlayGameScreen> {
   final GlobalKey<FlutterStopWatchState> _key = GlobalKey();
   final GlobalKey<MyCustomOutlineButtonState> _key2 = GlobalKey();
-  TextStyle textStyle = TextStyle(fontSize: 80.0.ssp, fontFamily: 'Bebas Neue');
+  TextStyle textStyle = TextStyle(fontSize: 80.0.ssp, fontFamily: fontName2); //'Bebas Neue');
   bool isPlayStart = false;
   int _counter = 0;
   bool isPlayTimeUpFlag = false;
@@ -39,7 +37,6 @@ class PlayGameScreenState extends State<PlayGameScreen> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
   }
 
@@ -60,7 +57,7 @@ class PlayGameScreenState extends State<PlayGameScreen> {
                       widget.rendaSelectTimeValue == 2 ? Text(
                         'NO LIMIT',
                         style: TextStyle(
-                            fontSize: 50.0.ssp, fontFamily: 'Bebas Neue'),)
+                            fontSize: 50.0.ssp, fontFamily: fontName2),) //'Bebas Neue'),)
                           : FlutterStopWatch(
                         key: _key,
                         dbRendaMachin: widget.dbRendaMachin,

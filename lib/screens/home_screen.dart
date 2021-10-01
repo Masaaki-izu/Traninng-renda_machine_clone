@@ -1,14 +1,13 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:renda_machine_clone/main.dart';
 import 'package:renda_machine_clone/screens/backgroud_image_display.dart';
+import '../cs.dart';
 import 'play_game_screen.dart';
-import 'play_game_timeup.dart';
 import 'mycustom_outline_button.dart';
-import 'package:renda_machine_clone/db/database_helper.dart';
 import 'package:renda_machine_clone/db/db_renda_machin.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+const int inputCharMax = 10;
 
 class HomeScreen extends StatefulWidget {
   final int score;
@@ -27,11 +26,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  final GlobalKey<MyCustomOutlineButtonState> _key =
-      GlobalKey();
+  final GlobalKey<MyCustomOutlineButtonState> _key = GlobalKey();
   final DbRendaMachin dbRendaMachin = DbRendaMachin();
-  final TextEditingController _textEditingController =
-      TextEditingController();
+  final TextEditingController _textEditingController = TextEditingController();
   bool isNameInputData = false;
   bool isDbSameUnName = false;
   String inputDataString = '';
@@ -46,8 +43,7 @@ class HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     super.dispose();
-    SystemChrome.setEnabledSystemUIOverlays(
-        SystemUiOverlay.values);
+    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
   }
 
   @override
@@ -87,8 +83,7 @@ class HomeScreenState extends State<HomeScreen> {
                       onTap: () {
                         _textEditingController.text = '';
                         _showInputDialog();
-                        setState(() {
-                        });
+                        setState(() {});
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -100,10 +95,9 @@ class HomeScreenState extends State<HomeScreen> {
                             width: 0.7.sw,
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              border: Border.all(
-                                  color: Colors.blue, width: 2.w),
-                              borderRadius: BorderRadius.circular(
-                                  8.0.r),
+                              border:
+                                  Border.all(color: Colors.blue, width: 2.w),
+                              borderRadius: BorderRadius.circular(8.0.r),
                             ),
                             padding: EdgeInsets.all(10.w),
                             child: Center(
@@ -139,7 +133,7 @@ class HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                     SizedBox(
-                      height: 40.0.ssp,
+                      height: 35.0.ssp, //40.0.ssp
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -185,42 +179,57 @@ class HomeScreenState extends State<HomeScreen> {
                   color: Colors.black,
                   fontSize: 24.0.ssp,
                 ),
-                maxLength: 10,
-                maxLengthEnforced: false,
+                maxLength: inputCharMax,
+                //maxLengthEnforced: false,
                 controller: _textEditingController,
                 inputFormatters: [
-                  LengthLimitingTextInputFormatter(10),
+                  LengthLimitingTextInputFormatter(inputCharMax),
                 ],
               ),
             ),
           ],
         ),
         actions: <Widget>[
-          FlatButton(
+          TextButton(
+              style: ButtonStyle(
+                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                shape: MaterialStateProperty.all<OutlinedBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(10.0),
+                    ),
+                    side: BorderSide(color: Colors.white),
+                  ),
+                ),
+              ),
               child: Text(
                 'CANCEL',
-                style: TextStyle(fontSize: 20.0.ssp),
+                style: TextStyle(fontSize: 20.0.ssp, fontFamily: fontName1),
               ),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0.r),
-                  side: BorderSide(color: Colors.white)),
               onPressed: () {
                 Navigator.pop(context, '');
                 SystemChrome.restoreSystemUIOverlays();
               }),
-          FlatButton(
+          TextButton(
+              style: ButtonStyle(
+                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                shape: MaterialStateProperty.all<OutlinedBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(10.0),
+                    ),
+                    side: BorderSide(color: Colors.white),
+                  ),
+                ),
+              ),
               child: Text(
                 'OK',
-                style: TextStyle(fontSize: 20.0.ssp),
+                style: TextStyle(fontSize: 20.0.ssp, fontFamily: fontName1),
               ),
-              //const
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0.r),
-                  side: BorderSide(color: Colors.white)),
               onPressed: () {
                 var name = _textEditingController.text;
-                if (name.length > 10) {
-                  name = name.substring(0, 10);
+                if (name.length > inputCharMax) {
+                  name = name.substring(0, inputCharMax);
                 }
                 Navigator.pop(context, name);
                 SystemChrome.restoreSystemUIOverlays();
@@ -238,7 +247,6 @@ class HomeScreenState extends State<HomeScreen> {
 
   void _inputTextCheck(String name) {
     if (name.isEmpty) {
-      print("enter");
       return;
     }
     if (name.isNotEmpty) {
@@ -279,7 +287,7 @@ class HomeScreenState extends State<HomeScreen> {
           TableRow(children: [
             Center(
               child: Text(
-                "10s",
+                selectGame[0],
                 style: TextStyle(
                   fontSize: 20.0.ssp,
                 ),
@@ -287,13 +295,13 @@ class HomeScreenState extends State<HomeScreen> {
             ),
             Center(
               child: Text(
-                "60s",
+                selectGame[1],
                 style: TextStyle(fontSize: 20.0.ssp),
               ), //),
             ),
             Center(
               child: Text(
-                "ENDLESS",
+                selectGame[2],
                 style: TextStyle(fontSize: 20.0.ssp),
               ), //),
             ),
@@ -343,47 +351,53 @@ class HomeScreenState extends State<HomeScreen> {
         child: ButtonBar(
           alignment: MainAxisAlignment.center,
           children: <Widget>[
-            OutlineButton(
-              borderSide: BorderSide(color: colorData[0], width: 3.0),
-              disabledBorderColor: Colors.black,
-              highlightedBorderColor: Colors.red,
-              child: Text(
-                '10s',
-                style: TextStyle(fontSize: 38.0.ssp, color: Colors.white),
-              ),
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                  padding: EdgeInsets.all(18.0),
+                  side: BorderSide(width: 3.0, color: colorData[0]),
+                  shape: new RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(15.0))),
               onPressed: () {
                 setState(() {
                   dbRendaMachin.rendaSelectTimeValue = 0;
                 });
               },
-            ),
-            OutlineButton(
-              borderSide: BorderSide(color: colorData[1], width: 3.0),
-              disabledBorderColor: Colors.black,
-              highlightedBorderColor: Colors.red,
               child: Text(
-                '60s',
+                selectGame[0],
                 style: TextStyle(fontSize: 38.0.ssp, color: Colors.white),
               ),
+            ),
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                  padding: EdgeInsets.all(18.0),
+                  side: BorderSide(width: 3.0, color: colorData[1]),
+                  shape: new RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(15.0))),
               onPressed: () {
                 setState(() {
                   dbRendaMachin.rendaSelectTimeValue = 1;
                 });
               },
-            ),
-            OutlineButton(
-              borderSide: BorderSide(color: colorData[2], width: 3.0),
-              disabledBorderColor: Colors.black,
-              highlightedBorderColor: Colors.red,
               child: Text(
-                'ENDLESS',
+                selectGame[1], //'60s',
                 style: TextStyle(fontSize: 38.0.ssp, color: Colors.white),
               ),
+            ),
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                  padding: EdgeInsets.all(18.0),
+                  side: BorderSide(width: 3.0, color: colorData[2]),
+                  shape: new RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(15.0))),
               onPressed: () {
                 setState(() {
                   dbRendaMachin.rendaSelectTimeValue = 2;
                 });
               },
+              child: Text(
+                selectGame[2], //''ENDLESS,
+                style: TextStyle(fontSize: 38.0.ssp, color: Colors.white),
+              ),
             ),
           ],
         ),
@@ -407,12 +421,12 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  _playGameScreen(BuildContext context) {
+  _playGameScreen(BuildContext context) async {
     int beforeScore;
     if (inputDataString.isEmpty) return;
 
     if (isDbSameUnName) {
-      dbRendaMachin.insert(
+      await dbRendaMachin.insert(
           nickName: inputDataString,
           timeCount: dbRendaMachin.rendaSelectTimeValue,
           score: 0);
@@ -443,7 +457,6 @@ class HomeScreenState extends State<HomeScreen> {
         });
   }
 
-  //TODO: 実際使用しているフォントを記載しましたが、他適当に記載している
   Widget _gameDisplayExplanation() {
     final double fontSize1 = 18.0;
     return Expanded(
@@ -452,56 +465,14 @@ class HomeScreenState extends State<HomeScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 2.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            //mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Text(
-                'FONT',
-                style: TextStyle(
-                  fontSize: fontSize1.ssp,
+              for (var _count = 0; _count < strExplanation.length; _count++)
+                Text(
+                  strExplanation[_count],
+                  style: TextStyle(
+                    fontSize: fontSize1.ssp,
+                  ),
                 ),
-              ),
-              Text(
-                'Bebas Neue', //'Isurus Labs',
-                style: TextStyle(
-                  fontSize: fontSize1.ssp,
-                ),
-              ),
-              Text(
-                'ONZE',
-                style: TextStyle(
-                  fontSize: fontSize1.ssp,
-                ),
-              ),
-              Text(
-                'ICON',
-                style: TextStyle(
-                  fontSize: fontSize1.ssp,
-                ),
-              ),
-              Text(
-                'Material',
-                style: TextStyle(
-                  fontSize: fontSize1.ssp,
-                ),
-              ),
-              Text(
-                'SPECIAL THANKS',
-                style: TextStyle(
-                  fontSize: fontSize1.ssp,
-                ),
-              ),
-              Text(
-                'Material,@clone.iz',
-                style: TextStyle(
-                  fontSize: fontSize1.ssp,
-                ),
-              ),
-              Text(
-                '(c) 2021 izumi',
-                style: TextStyle(
-                  fontSize: fontSize1.ssp,
-                ),
-              ),
             ],
           ),
         ),
@@ -509,15 +480,16 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  //TODO:　できれば実際の形の枠に変更したい
   Widget _rankingDisplay() {
     final double fontSize0 = 20.0;
     final double fontSize1 = 15.0;
     return Align(
       alignment: Alignment.bottomRight,
       child: Container(
-        width: 240.0.w,
-        height: 240.0.h,
+        width: 0.5.sw,
+        //240.0.w,
+        height: 0.3.sh,
+        //240.0.h,
         padding: EdgeInsets.only(left: 3.0.w),
         decoration: BoxDecoration(
           border: Border.all(color: Colors.red, width: 2.0.r),
@@ -537,67 +509,18 @@ class HomeScreenState extends State<HomeScreen> {
               SizedBox(
                 height: 1.0.h,
               ),
-              Text(
-                '1.' + dbRendaMachin.scoreData[dbRendaMachin.rendaSelectTimeValue][0],
-                style: TextStyle(
-                  fontSize: fontSize1.ssp,
+              for (var _count = 1; _count <= 10; _count++)
+                (dbRendaMachin.scoreData[dbRendaMachin
+                    .rendaSelectTimeValue][_count - 1] != '')
+                    ? Text('$_count.' +
+                    dbRendaMachin.scoreData[
+                    dbRendaMachin.rendaSelectTimeValue][_count - 1],
+                    style: TextStyle(fontSize: fontSize1.ssp,
+                    ))
+                    : Text(' ',
+                  style: TextStyle(fontSize: fontSize1.ssp,
+                  ),
                 ),
-              ),
-              Text(
-                '2.' + dbRendaMachin.scoreData[dbRendaMachin.rendaSelectTimeValue][1],
-                style: TextStyle(
-                  fontSize: fontSize1.ssp,
-                ),
-              ),
-              Text(
-                '3.' + dbRendaMachin.scoreData[dbRendaMachin.rendaSelectTimeValue][2],
-                style: TextStyle(
-                  fontSize: fontSize1.ssp,
-                ),
-              ),
-              Text(
-                '4.' + dbRendaMachin.scoreData[dbRendaMachin.rendaSelectTimeValue][3],
-                style: TextStyle(
-                  fontSize: fontSize1.ssp,
-                ),
-              ),
-              Text(
-                '5.' + dbRendaMachin.scoreData[dbRendaMachin.rendaSelectTimeValue][4],
-                style: TextStyle(
-                  fontSize: fontSize1.ssp,
-                ),
-              ),
-              Text(
-                '6.' + dbRendaMachin.scoreData[dbRendaMachin.rendaSelectTimeValue][5],
-                style: TextStyle(
-                  fontSize: fontSize1.ssp,
-                ),
-              ),
-              Text(
-                '7.' + dbRendaMachin.scoreData[dbRendaMachin.rendaSelectTimeValue][6],
-                style: TextStyle(
-                  fontSize: fontSize1.ssp,
-                ),
-              ),
-              Text(
-                '8.' + dbRendaMachin.scoreData[dbRendaMachin.rendaSelectTimeValue][7],
-                style: TextStyle(
-                  fontSize: fontSize1.ssp,
-                ),
-              ),
-              Text(
-                '9.' + dbRendaMachin.scoreData[dbRendaMachin.rendaSelectTimeValue][8],
-                style: TextStyle(
-                  fontSize: fontSize1.ssp,
-                ),
-              ),
-              Text(
-                '10.' +
-                    dbRendaMachin.scoreData[dbRendaMachin.rendaSelectTimeValue][9],
-                style: TextStyle(
-                  fontSize: fontSize1.ssp,
-                ),
-              ),
             ],
           ),
         ),
@@ -612,26 +535,4 @@ class HomeScreenState extends State<HomeScreen> {
     setState(() {});
   }
 
-  // 以下　debug 用
-  Future<void> _dataDBDisplay() async {
-    final List<Map<String, dynamic>> _allData =
-        await dbRendaMachin.dbHelper.queryAllRows();
-    print("-------------");
-    print('$_allData');
-    print("-------------");
-  }
-
-  Future<void> _data1Delete(String _name) async {
-    await dbRendaMachin.dbHelper.delete(_name);
-  }
-
-  Future<void> _dataAllDelete() async {
-    String _name = '';
-    final List<Map<String, dynamic>> _allData =
-        await dbRendaMachin.dbHelper.queryAllRows();
-    for (int i = 0; i < _allData.length; i++) {
-      _name = _allData[i]['nickName'];
-      await dbRendaMachin.dbHelper.delete(_name);
-    }
-  }
 }

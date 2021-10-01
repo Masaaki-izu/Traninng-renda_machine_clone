@@ -87,14 +87,14 @@ class DatabaseHelper {
 
   Future<int> update(Map<String, dynamic> row) async {
     Database db = await instance.database;
-    String Name = row[columnNickName];
+    String strName = row[columnNickName];
     return await db.update(
-        table, row, where: '$columnNickName = ?', whereArgs: [Name]);
+        table, row, where: '$columnNickName = ?', whereArgs: [strName]);
   }
 
-  Future<int> delete(String Name) async {
+  Future<int> delete(String strName) async {
     Database db = await instance.database;
     return await db.delete(
-        table, where: '$columnNickName = ?', whereArgs: [Name]);
+        table, where: '$columnNickName = ?', whereArgs: [strName]);
   }
 }

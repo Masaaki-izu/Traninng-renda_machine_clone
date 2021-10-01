@@ -42,7 +42,6 @@ class PlayGameTimeUpState extends State<PlayGameTimeUp> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
   }
 
@@ -118,7 +117,6 @@ class PlayGameTimeUpState extends State<PlayGameTimeUp> {
   Widget _quitButtonDisplay() {
     return MyCustomOutlineButton(
       key: _key,
-      //_myCustumOutlineButton(
       text: 'QUIT',
       color: Colors.redAccent.withOpacity(0.3),
       onPressed: () => _quitEndprocess(),
