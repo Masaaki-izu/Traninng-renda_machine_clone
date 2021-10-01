@@ -73,10 +73,6 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: jupiter 2
-      fonts:
-        - asset: assets/fonts/jupiter 2.ttf
-  #
     - family: Marlboro
       fonts:
         - asset: assets/fonts/Marlboro.ttf
