@@ -346,6 +346,7 @@ class HomeScreenState extends State<HomeScreen> {
   Widget _rendaTimeSelect() {
     final List<Color> colorData = [Colors.blue, Colors.blue, Colors.blue];
     colorData[dbRendaMachin.rendaSelectTimeValue] = Colors.red;
+
     return Container(
       child: FittedBox(
         child: ButtonBar(
@@ -423,8 +424,10 @@ class HomeScreenState extends State<HomeScreen> {
 
   _playGameScreen(BuildContext context) async {
     int beforeScore;
-    if (inputDataString.isEmpty) return;
 
+    if (inputDataString.isEmpty) {
+      return;
+    }
     if (isDbSameUnName) {
       await dbRendaMachin.insert(
           nickName: inputDataString,
@@ -459,6 +462,7 @@ class HomeScreenState extends State<HomeScreen> {
 
   Widget _gameDisplayExplanation() {
     final double fontSize1 = 18.0;
+
     return Expanded(
       child: Container(
         child: Padding(
@@ -483,13 +487,12 @@ class HomeScreenState extends State<HomeScreen> {
   Widget _rankingDisplay() {
     final double fontSize0 = 20.0;
     final double fontSize1 = 15.0;
+
     return Align(
       alignment: Alignment.bottomRight,
       child: Container(
         width: 0.5.sw,
-        //240.0.w,
         height: 0.3.sh,
-        //240.0.h,
         padding: EdgeInsets.only(left: 3.0.w),
         decoration: BoxDecoration(
           border: Border.all(color: Colors.red, width: 2.0.r),
