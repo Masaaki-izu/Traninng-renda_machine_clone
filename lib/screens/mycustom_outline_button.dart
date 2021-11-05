@@ -26,7 +26,7 @@ class MyCustomOutlineButtonState extends State<MyCustomOutlineButton> {
         decoration: BoxDecoration(
           border: Border.all(color: Colors.red, width: 2.0),
           color: widget.color,
-          borderRadius: BorderRadius.circular(widget.redius1), //8
+          borderRadius: BorderRadius.circular(widget.redius1),
         ),
         margin: EdgeInsets.all(widget.edge),
         child: RawMaterialButton(
@@ -36,8 +36,6 @@ class MyCustomOutlineButtonState extends State<MyCustomOutlineButton> {
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 14.0),
-            //child: FittedBox(
-              //fit: BoxFit.contain,
              child: Text(
               widget.text,
               style: TextStyle(

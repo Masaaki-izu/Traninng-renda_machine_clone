@@ -81,6 +81,16 @@ class FlutterStopWatchState extends State<FlutterStopWatch> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.rendaSelectTimeValue == 0) {
+      secondsStr = '10';
+    } else {
+      secondsStr = '60';
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       child: Column(
@@ -98,7 +108,6 @@ class FlutterStopWatchState extends State<FlutterStopWatch> {
 
   void startListenStr() {
     String sameChar = '', sameChar1 = '';
-
     timerStream = stopWatchStream();
     timerSubscription = timerStream.listen((int newTick) {
       //setState(() {

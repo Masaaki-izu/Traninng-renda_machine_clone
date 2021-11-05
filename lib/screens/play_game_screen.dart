@@ -24,14 +24,17 @@ class PlayGameScreen extends StatefulWidget {
 class PlayGameScreenState extends State<PlayGameScreen> {
   final GlobalKey<FlutterStopWatchState> _key = GlobalKey();
   final GlobalKey<MyCustomOutlineButtonState> _key2 = GlobalKey();
-  TextStyle textStyle = TextStyle(fontSize: 80.0.ssp, fontFamily: fontName2); //'Bebas Neue');
+  TextStyle textStyle = TextStyle(fontSize: 80.0.ssp, fontFamily: fontName2);
   bool isPlayStart = false;
   int _counter = 0;
   bool isPlayTimeUpFlag = false;
 
   @override
   void initState() {
-    SystemChrome.setEnabledSystemUIOverlays([]);
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.immersiveSticky,
+    );
+    if (widget.rendaSelectTimeValue == 2 )  _counter = widget.beforeSore;
     super.initState();
   }
 
@@ -49,42 +52,44 @@ class PlayGameScreenState extends State<PlayGameScreen> {
           BackgroundImageDisplay(),
           SafeArea(
             child: Center(
-              child: Column(
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      widget.rendaSelectTimeValue == 2 ? Text(
-                        'NO LIMIT',
-                        style: TextStyle(
-                            fontSize: 50.0.ssp, fontFamily: fontName2),) //'Bebas Neue'),)
-                          : FlutterStopWatch(
-                        key: _key,
-                        dbRendaMachin: widget.dbRendaMachin,
-                        rendaSelectTimeValue: widget.rendaSelectTimeValue,
-                        inputdata: widget.inputData,
-                        numberScore: widget.beforeSore,
-                      ),
-                      SizedBox(
-                        width: 20.0.h,
-                      ),
-                      //TODO QUIT
-                      _quitButtonDisplay(),
-                    ],
-                  ),
-                  //
-                  (isPlayStart)
-                      ? _countRendDispaly()
-                      : Text(
-                    ' Press any button to Start',
-                    style: TextStyle(
-                        fontSize: 45.0.ssp),
-                  ),
-                  _rendaButtonLine(),
-                  _rendaButtonLine(),
-                  _rendaButtonLine(),
-                  _rendaButtonLine(),
-                ],
+              child: Padding(
+                padding: const EdgeInsets.all(6.0),
+                child: Column(
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        widget.rendaSelectTimeValue == 2 ?
+                         Text('NO LIMIT',
+                          style: TextStyle(
+                              fontSize: 50.0.ssp, fontFamily: fontName2),)
+                            : FlutterStopWatch(
+                          key: _key,
+                          dbRendaMachin: widget.dbRendaMachin,
+                          rendaSelectTimeValue: widget.rendaSelectTimeValue,
+                          inputdata: widget.inputData,
+                          numberScore: widget.beforeSore,
+                        ),
+                        SizedBox(
+                          width: 20.0.h,
+                        ),
+                        //TODO QUIT
+                        _quitButtonDisplay(),
+                      ],
+                    ),
+                    //
+
+                    (isPlayStart == false) ?
+                       (widget.rendaSelectTimeValue == 2) ?  _countRendDispaly()
+                       : Text(' Press any button \n' + ' to Start ', style: TextStyle(
+                          fontSize: 45.0.ssp),)
+                    : _countRendDispaly(),
+                    _rendaButtonLine(),
+                    _rendaButtonLine(),
+                    _rendaButtonLine(),
+                    _rendaButtonLine(),
+                  ],
+                ),
               ),
             ),
           ),
@@ -147,24 +152,23 @@ class PlayGameScreenState extends State<PlayGameScreen> {
       text: '',
       color: Colors.redAccent.withOpacity(0.3),
       redius1: 20.0.r,
-      edge: 4.0.w,
+      edge: 6.0.w,
       redius2: 15.0.r,
       fontsize: 60.0.ssp,
       onPressed: () {
         setState(() {
           if (widget.rendaSelectTimeValue == 2) {
             isPlayStart = true;
-            if (_counter == 0) _counter = _counter + widget.beforeSore;
               _counter++;
           } else {
-            if (_counter == 0) {
-              isPlayStart = true;
-              _key.currentState.startListenStr();
-            }
-            if (!_key.currentState.isTimeUpFlag) {
+            if (!_key.currentState.isTimeUpFlag && isPlayStart == true) {
               _counter++;
               _key.currentState.scoreCount = _counter;
             }
+            if (_counter == 0) {
+              isPlayStart = true;
+              _key.currentState.startListenStr();
+            }  //if (!_key.currentState.isTimeUpFlag) {
           }
         });
       },
@@ -176,14 +180,14 @@ class PlayGameScreenState extends State<PlayGameScreen> {
       child: Column(
         children: <Widget>[
           SizedBox(
-            height: 15.0.h,
+            height: 10.0.h,//15
           ),
           Text(
             _counter.toString(),
             style: TextStyle(fontSize: 70.0.ssp),
           ),
           SizedBox(
-            height: 15.0.h,
+            height: 10.0.h, //15
           ),
         ],
       ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/screenutil_init.dart';
 import 'package:renda_machine_clone/screens/home_screen.dart';
+import 'input_storage.dart';
 
 void main() => runApp(MyApp());
 
@@ -10,7 +11,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setEnabledSystemUIOverlays([]);
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.immersiveSticky,
+    );
     return ScreenUtilInit(
       designSize: Size(411, 683),
       allowFontScaling: true,
@@ -23,7 +26,7 @@ class MyApp extends StatelessWidget {
                child: widget,
              );
            },
-           home: HomeScreen(),
+           home: HomeScreen(inputStorage: InputStorage(),),
         ),
     );
   }
