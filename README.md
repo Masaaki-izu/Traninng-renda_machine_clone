@@ -1,6 +1,6 @@
 # renda_machine_clone
 
-A new Flutter application.
+A new Flutter application.    （Flutter  version   2.5.3)
 
 ## Getting Started
 
